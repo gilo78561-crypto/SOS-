@@ -25,7 +25,7 @@ jobs:
       EXPO_PUBLIC_API_URL: http://10.0.2.2:4000/api
       EXPO_PUBLIC_DEMO_MODE: 'true'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with:
           node-version: 24
