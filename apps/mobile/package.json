@@ -13,7 +13,7 @@
     "@sos/contracts": "*",
     "expo": "55.0.32",
     "react": "19.2.0",
-    "react-native": "0.83.10",
+    "react-native": "0.88.0",
     "expo-secure-store": "~55.0.0",
     "expo-location": "~55.1.15",
     "expo-status-bar": "~55.0.0",
