@@ -1,0 +1,1065 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/health": {
+      "get": {
+        "operationId": "ApiController_health",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/config": {
+      "get": {
+        "operationId": "ApiController_config",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/services": {
+      "get": {
+        "operationId": "ApiController_services",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/zones": {
+      "get": {
+        "operationId": "ApiController_zones",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "operationId": "ApiController_register",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "email", "password", "phone", "consent"],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 12
+                  },
+                  "phone": {
+                    "type": "string",
+                    "example": "+2290190000000"
+                  },
+                  "role": {
+                    "type": "string",
+                    "enum": ["client", "doctor", "nurse"]
+                  },
+                  "consent": {
+                    "type": "boolean",
+                    "enum": [true]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "operationId": "ApiController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "operationId": "ApiController_me",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "operationId": "ApiController_logout",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/auth/refresh": {
+      "post": {
+        "operationId": "ApiController_refresh",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/auth/sessions": {
+      "get": {
+        "operationId": "ApiController_sessions",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/auth/sessions/{id}": {
+      "delete": {
+        "operationId": "ApiController_revoke",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/auth/forgot": {
+      "post": {
+        "operationId": "ApiController_forgot",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/auth/reset": {
+      "post": {
+        "operationId": "ApiController_reset",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/beneficiaries": {
+      "get": {
+        "operationId": "ApiController_beneficiaries",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      },
+      "post": {
+        "operationId": "ApiController_addBeneficiary",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/cares": {
+      "get": {
+        "operationId": "ApiController_cares",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      },
+      "post": {
+        "operationId": "ApiController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["serviceId", "description", "address", "zone", "startAt", "consent"],
+                "properties": {
+                  "serviceId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "beneficiaryId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "nullable": true
+                  },
+                  "description": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 2000
+                  },
+                  "address": {
+                    "type": "string",
+                    "minLength": 5
+                  },
+                  "zone": {
+                    "type": "string"
+                  },
+                  "startAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "urgent": {
+                    "type": "boolean"
+                  },
+                  "consent": {
+                    "type": "boolean",
+                    "enum": [true]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/cares/{id}": {
+      "get": {
+        "operationId": "ApiController_detail",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/cares/{id}/transition": {
+      "post": {
+        "operationId": "ApiController_transition",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/cares/{id}/quote": {
+      "post": {
+        "operationId": "ApiController_quote",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/cares/{id}/candidates": {
+      "get": {
+        "operationId": "ApiController_candidates",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/cares/{id}/assign": {
+      "post": {
+        "operationId": "ApiController_assign",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/cares/{id}/notes": {
+      "get": {
+        "operationId": "ApiController_notes",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      },
+      "post": {
+        "operationId": "ApiController_addNote",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/cares/{id}/consultation": {
+      "post": {
+        "operationId": "ApiController_consultation",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/professional/profile": {
+      "get": {
+        "operationId": "ApiController_profile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      },
+      "patch": {
+        "operationId": "ApiController_updateProfile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/professional/availability": {
+      "get": {
+        "operationId": "ApiController_availability",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      },
+      "post": {
+        "operationId": "ApiController_addAvailability",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/professionals": {
+      "get": {
+        "operationId": "ApiController_professionals",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/professionals/{id}/verify": {
+      "post": {
+        "operationId": "ApiController_verify",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/documents": {
+      "get": {
+        "operationId": "ApiController_documents",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      },
+      "post": {
+        "operationId": "ApiController_upload",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/documents/{id}/content": {
+      "get": {
+        "operationId": "ApiController_download",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/invoices": {
+      "get": {
+        "operationId": "ApiController_invoices",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/payments": {
+      "get": {
+        "operationId": "ApiController_paymentsList",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/invoices/{id}/pay": {
+      "post": {
+        "operationId": "ApiController_pay",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["provider", "phone"],
+                "properties": {
+                  "provider": {
+                    "type": "string",
+                    "enum": ["mtn", "moov", "celtiis"]
+                  },
+                  "phone": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/payments/{id}/reconcile": {
+      "post": {
+        "operationId": "ApiController_reconcile",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/payments/{id}/simulate": {
+      "post": {
+        "operationId": "ApiController_simulate",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/payments/{id}/refund": {
+      "post": {
+        "operationId": "ApiController_refund",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/webhooks/fedapay": {
+      "post": {
+        "operationId": "ApiController_webhook",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/notifications": {
+      "get": {
+        "operationId": "ApiController_notifications",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/notifications/{id}/read": {
+      "patch": {
+        "operationId": "ApiController_read",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/notifications/dispatch": {
+      "post": {
+        "operationId": "ApiController_dispatch",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/preferences": {
+      "get": {
+        "operationId": "ApiController_preferences",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      },
+      "patch": {
+        "operationId": "ApiController_setPreferences",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/tickets": {
+      "get": {
+        "operationId": "ApiController_tickets",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      },
+      "post": {
+        "operationId": "ApiController_ticket",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/tickets/{id}": {
+      "patch": {
+        "operationId": "ApiController_reply",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/assistant": {
+      "post": {
+        "operationId": "ApiController_assistant",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/admin/users": {
+      "get": {
+        "operationId": "ApiController_users",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/admin/users/{id}": {
+      "patch": {
+        "operationId": "ApiController_suspend",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/admin/audit": {
+      "get": {
+        "operationId": "ApiController_audit",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/admin/services": {
+      "get": {
+        "operationId": "ApiController_allServices",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      },
+      "post": {
+        "operationId": "ApiController_createService",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/admin/services/{id}": {
+      "patch": {
+        "operationId": "ApiController_updateService",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/admin/zones": {
+      "post": {
+        "operationId": "ApiController_zone",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/operations/settings": {
+      "get": {
+        "operationId": "ApiController_settings",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      },
+      "patch": {
+        "operationId": "ApiController_setSettings",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/operations/release-expired": {
+      "post": {
+        "operationId": "ApiController_release",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/professional/availability/weekly": {
+      "post": {
+        "operationId": "ApiController_weekly",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/professional/earnings": {
+      "get": {
+        "operationId": "ApiController_earnings",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    },
+    "/api/privacy/export": {
+      "get": {
+        "operationId": "ApiController_exportPersonal",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["SOS DOCTEURS"]
+      }
+    }
+  },
+  "info": {
+    "title": "SOS DOCTEURS",
+    "description": "API française. Session cookie + X-CSRF-Token pour le web ; token opaque Bearer pour Android. Identifiants UUID. Les routes vérifient les droits serveur.",
+    "version": "0.1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      },
+      "cookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "sos_session"
+      }
+    },
+    "schemas": {}
+  }
+}

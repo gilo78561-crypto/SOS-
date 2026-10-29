@@ -1,0 +1,13 @@
+node_modules
+**/node_modules
+.cache
+.data
+**/.next
+**/dist
+**/android
+**/.expo
+artifacts
+test-results
+playwright-report
+apps/web/AGENTS.md
+package-lock.json

@@ -1,0 +1,47 @@
+services:
+  db:
+    image: postgis/postgis:16-3.5
+    environment:
+      POSTGRES_USER: sos
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Configure POSTGRES_PASSWORD}
+      POSTGRES_DB: sos_docteurs
+    ports: ['127.0.0.1:5432:5432']
+    volumes: ['postgres_data:/var/lib/postgresql/data']
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U sos -d sos_docteurs']
+      interval: 5s
+      timeout: 5s
+      retries: 15
+  api:
+    profiles: ['app']
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      DEMO_MODE: 'false'
+      DATABASE_URL: postgresql://sos:${POSTGRES_PASSWORD}@db:5432/sos_docteurs
+    depends_on:
+      db:
+        condition: service_healthy
+    ports: ['127.0.0.1:4000:4000']
+    volumes: ['private_data:/app/.data']
+  web:
+    profiles: ['app']
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+        NEXT_PUBLIC_MAP_PROVIDER: ${NEXT_PUBLIC_MAP_PROVIDER:-osm}
+        NEXT_PUBLIC_MAP_TILE_URL: ${NEXT_PUBLIC_MAP_TILE_URL:-}
+        NEXT_PUBLIC_MAP_ATTRIBUTION: ${NEXT_PUBLIC_MAP_ATTRIBUTION:-}
+        NEXT_PUBLIC_MAP_ATTRIBUTION_URL: ${NEXT_PUBLIC_MAP_ATTRIBUTION_URL:-}
+    ports: ['127.0.0.1:3000:3000']
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+    depends_on: [api]
+volumes:
+  postgres_data:
+  private_data:

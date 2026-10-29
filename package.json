@@ -1,0 +1,57 @@
+{
+  "name": "sos-docteurs",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "setup": "node scripts/setup.mjs",
+    "dev": "concurrently -n API,WEB -c green,blue \"npm run dev -w @sos/api\" \"npm run dev -w @sos/web\"",
+    "dev:api": "npm run dev -w @sos/api",
+    "dev:web": "npm run dev -w @sos/web",
+    "dev:mobile": "npm run start -w @sos/mobile",
+    "db:migrate": "npm run migrate -w @sos/api",
+    "db:seed": "npm run seed -w @sos/api",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "eslint apps packages scripts tests --max-warnings=0",
+    "format": "prettier --write apps packages scripts tests docs design-system .github *.json *.yml *.md *.ts *.mjs",
+    "format:check": "prettier --check apps packages scripts tests docs design-system .github *.json *.yml *.md *.ts *.mjs",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "build": "npm run build -w @sos/api && npm run build -w @sos/web",
+    "android:prebuild": "npm run prebuild -w @sos/mobile",
+    "android:apk": "powershell -ExecutionPolicy Bypass -File scripts/build-android.ps1",
+    "postinstall": "npm run build -w @sos/contracts",
+    "bootstrap:admin": "npm run build -w @sos/api && node apps/api/dist/cli.js bootstrap-admin",
+    "bootstrap:operator": "npm run build -w @sos/api && node apps/api/dist/cli.js bootstrap-operator",
+    "db:backup": "node scripts/backup.mjs",
+    "db:restore:test": "node scripts/backup.mjs --verify"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.0",
+    "@playwright/test": "^1.56.0",
+    "@types/cookie-parser": "^1.4.9",
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.0.0",
+    "@types/supertest": "^6.0.3",
+    "concurrently": "^9.2.0",
+    "eslint": "^9.39.0",
+    "prettier": "^3.6.2",
+    "supertest": "^7.1.4",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.0",
+    "vitest": "^5.0.5",
+    "vite": "^7.3.1"
+  },
+  "overrides": {
+    "multer": "^2.5.0",
+    "zod": "^4.6.6",
+    "js-yaml": "^5.4.1"
+  }
+}
