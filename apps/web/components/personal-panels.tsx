@@ -208,10 +208,9 @@ export function AvailabilityPanel() {
   );
 }
 export async function downloadDocument(d: DocumentInfo) {
-  const r = await fetch(
-    (process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000/api') + '/documents/' + d.id + '/content',
-    { credentials: 'include' },
-  );
+  const r = await fetch((process.env.NEXT_PUBLIC_API_URL || '/api') + '/documents/' + d.id + '/content', {
+    credentials: 'include',
+  });
   if (!r.ok) throw new Error('Téléchargement non autorisé ou indisponible.');
   const url = URL.createObjectURL(await r.blob()),
     link = document.createElement('a');
