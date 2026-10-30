@@ -1,11 +1,11 @@
-import './config';
+import { databaseUrlUnpooled } from './config';
 import { Database } from './database';
 import { seed } from './seed';
 import { hashPassword } from './crypto';
 import { emailSchema, passwordSchema } from '@sos/contracts';
 import { z } from 'zod';
 async function main() {
-  const db = await new Database().connect(true);
+  const db = await new Database(databaseUrlUnpooled).connect(true);
   try {
     const command = process.argv[2];
     if (command === 'seed') await seed(db);

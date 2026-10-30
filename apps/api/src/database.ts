@@ -3,11 +3,11 @@ import { DataSource, type EntityManager, type Repository } from 'typeorm';
 import { schema, type Tables } from './schema-v1';
 import { Initial1793059200000 } from './migration';
 import { AuditDetail, AuditDetails1793059200001 } from './audit-details';
-import { production, validateConfig } from './config';
+import { databaseUrl, production, validateConfig } from './config';
 export class Database {
   source: DataSource;
   geo = false;
-  constructor(url = process.env.DATABASE_URL) {
+  constructor(url = databaseUrl) {
     this.source = new DataSource({
       type: 'postgres',
       url,

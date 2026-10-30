@@ -17,6 +17,7 @@
     "dev:mobile": "npm run start -w @sos/mobile",
     "db:migrate": "npm run migrate -w @sos/api",
     "db:seed": "npm run seed -w @sos/api",
+    "build:vercel": "node scripts/vercel-build.mjs",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "lint": "eslint apps packages scripts tests --max-warnings=0",
     "format": "prettier --write apps packages scripts tests docs design-system .github *.json *.yml *.md *.ts *.mjs",
