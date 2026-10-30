@@ -16,7 +16,7 @@ import { api, setCsrf, errorText } from '../lib/api';
 export function Login() {
   const router = useRouter(),
     query = useSearchParams();
-  const [mode, setMode] = useState(query.get('mode') === 'inscription' ? 'register' : 'login'),
+  const [mode, setMode] = useState(query?.get('mode') === 'inscription' ? 'register' : 'login'),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(''),
     [success, setSuccess] = useState(''),
@@ -67,7 +67,7 @@ export function Login() {
           payload,
         );
         setCsrf(result.csrf);
-        router.push('/espace' + (query.get('retour') === 'demande' ? '?nouveau=1' : ''));
+        router.push('/espace' + (query?.get('retour') === 'demande' ? '?nouveau=1' : ''));
       }
     } catch (e) {
       setError(errorText(e));

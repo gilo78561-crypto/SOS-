@@ -19,7 +19,7 @@ export async function api<T>(
 ): Promise<T> {
   let response: Response;
   try {
-    response = await fetch((process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000/api') + path, {
+    response = await fetch((process.env.NEXT_PUBLIC_API_URL || '/api') + path, {
       method,
       credentials: 'include',
       headers: {

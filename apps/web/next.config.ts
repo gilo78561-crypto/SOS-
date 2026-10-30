@@ -1,8 +1,12 @@
+/* global __dirname */
 import type { NextConfig } from 'next';
+import { resolve } from 'node:path';
 const config: NextConfig = {
   poweredByHeader: false,
   output: 'standalone',
+  outputFileTracingRoot: resolve(__dirname, '../..'),
   transpilePackages: ['@sos/contracts'],
+  serverExternalPackages: ['@sos/api'],
   async headers() {
     return [
       {

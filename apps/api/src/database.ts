@@ -16,7 +16,11 @@ export class Database {
       synchronize: false,
       logging: false,
       ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: true } : false,
-      extra: { max: 10 },
+      extra: {
+        max: process.env.VERCEL ? 2 : 10,
+        connectionTimeoutMillis: 10000,
+        idleTimeoutMillis: 10000,
+      },
     });
   }
   async connect(migrate = !production) {

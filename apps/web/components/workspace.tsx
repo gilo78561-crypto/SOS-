@@ -89,7 +89,7 @@ export function Workspace() {
       })
       .catch((e) => {
         if (e instanceof ApiError && e.status === 401)
-          router.replace('/connexion' + (query.get('nouveau') ? '?retour=demande' : ''));
+          router.replace('/connexion' + (query?.get('nouveau') ? '?retour=demande' : ''));
         else if (active) setAuthError(errorText(e));
       })
       .finally(() => {
@@ -119,7 +119,7 @@ export function Workspace() {
       </main>
     );
   return user ? (
-    <AuthenticatedWorkspace user={user} initialNew={query.get('nouveau') === '1'} />
+    <AuthenticatedWorkspace user={user} initialNew={query?.get('nouveau') === '1'} />
   ) : (
     <main id="main" className="loading">
       Redirection vers la connexion…

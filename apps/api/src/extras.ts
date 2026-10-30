@@ -40,6 +40,8 @@ export class PrivateStorage {
         }),
       );
     else {
+      if (process.env.VERCEL)
+        throw new ServiceUnavailableException('Le stockage privé des documents est indisponible.');
       await mkdir(resolve(root, '.data/private'), { recursive: true });
       await writeFile(resolve(root, '.data/private', key), body, { mode: 0o600 });
     }
@@ -51,7 +53,11 @@ export class PrivateStorage {
     if (this.s3) {
       const r = await this.s3.send(new GetObjectCommand({ Bucket: process.env.STORAGE_BUCKET, Key: key }));
       data = await r.Body!.transformToString();
-    } else data = await readFile(resolve(root, '.data/private', key), 'utf8');
+    } else {
+      if (process.env.VERCEL)
+        throw new ServiceUnavailableException('Le stockage privé des documents est indisponible.');
+      data = await readFile(resolve(root, '.data/private', key), 'utf8');
+    }
     return Buffer.from(decrypt(data), 'base64');
   }
 }
