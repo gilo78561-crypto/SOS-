@@ -63,7 +63,7 @@ export class AuthService {
         await this.db.repo('professionals', em).save({
           userId: u.id,
           name: u.name,
-          role: u.role,
+          role: v.role,
           specialty: 'À renseigner',
           skills: [],
           zones: [],

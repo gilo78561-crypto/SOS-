@@ -6,6 +6,18 @@ Développement : configuration locale générée par npm run setup, comptes fict
 
 Consulter .env.example pour les variables. NODE_ENV, PORT, DATABASE_URL, DB_SSL, DATA_ENCRYPTION_KEY, WEB_ORIGIN et PUBLIC_API_URL concernent le serveur. NEXT_PUBLIC_* et EXPO_PUBLIC_* sont publics et intégrés aux builds : ne jamais y placer de secret. TEST_DATABASE_URL est strictement une base de test.
 
+## Vercel : site web et API
+
+Créer deux projets Vercel à partir du même dépôt si le web et l'API sont hébergés sur Vercel. Pour le site, choisir **Root Directory = apps/web** et **Framework Preset = Next.js**. Pour l'API, choisir **Root Directory = apps/api** et **Framework Preset = NestJS**. Activer l'accès aux fichiers hors du Root Directory pour inclure `packages/contracts` et la configuration TypeScript partagée. Choisir Node.js 24.x.
+
+Les fichiers `apps/web/vercel.json` et `apps/api/vercel.json` définissent les commandes d'installation et de compilation. L'installation revient à la racine et utilise `npm ci --include=dev --include-workspace-root` avec les workspaces concernés. Cela installe le compilateur TypeScript déclaré à la racine avant que `postinstall` compile `@sos/contracts`, même si l'environnement demande normalement d'omettre les dépendances de développement. Ne pas remplacer cette commande par une installation limitée au seul sous-dossier.
+
+Après envoi du correctif sur GitHub, redéployer le nouveau commit. Vérifier que le journal affiche la commande `npm ci` ci-dessus. Si l'ancien `npm install` apparaît encore, vérifier le commit déployé et le Root Directory. Les avertissements npm `cache-dir` et `glob` ne sont pas l'erreur `tsc: command not found`.
+
+Le web nécessite `NEXT_PUBLIC_API_URL` pointant vers l'API HTTPS, avec le suffixe `/api`. L'API nécessite sa base PostgreSQL distante avec PostGIS, les migrations appliquées séparément, `DATA_ENCRYPTION_KEY`, `WEB_ORIGIN`, `PUBLIC_API_URL`, `DEMO_MODE=false` et `PAYMENT_MODE=disabled` ou une intégration marchande réelle. Sur Vercel, configurer le stockage privé S3 : le stockage local `.data/private` n'est pas un stockage persistant pour les fonctions. Ne pas renseigner une URL `localhost` pour les services déployés. Préférer un même domaine parent pour le web et l'API avec les cookies `SameSite=Strict` actuels, ou prévoir un proxy de même origine avant de tester la connexion depuis deux domaines indépendants.
+
+Ce correctif concerne l'installation et la compilation ; il ne provisionne pas la base, le stockage ni les secrets. Références : [monorepos Vercel](https://vercel.com/docs/monorepos), [NestJS sur Vercel](https://vercel.com/docs/frameworks/backend/nestjs), [options npm ci](https://docs.npmjs.com/cli/v11/commands/npm-ci/).
+
 ## Docker Compose
 
 Docker n’était pas installé sur ce poste ; ces images et la CI sont fournies mais n’ont pas été exécutées ici. POSTGRES_PASSWORD doit être une valeur forte dans l’environnement privé. Pour la base de développement : docker compose up -d db, puis configurer DATABASE_URL pour le port 5432. Cette base PostGIS est distincte de la base Windows locale 55432.
