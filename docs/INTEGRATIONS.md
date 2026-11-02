@@ -38,4 +38,10 @@ L’adaptateur serveur OpenAI Responses nécessite AI_ENABLED=true, OPENAI_API_K
 
 ## Documents privés
 
-Le stockage local chiffré AES-GCM est opérationnel et contrôlé par l’API. Pour S3 compatible : STORAGE_ENDPOINT HTTPS, STORAGE_REGION, STORAGE_BUCKET, STORAGE_ACCESS_KEY_ID et STORAGE_SECRET_ACCESS_KEY. Le bucket doit être privé, sans accès public ni journalisation de données sensibles. Les noms de clés sont aléatoires. Aucun lien public n’est généré. Les clés de chiffrement restent hors bucket. L’adaptateur S3 n’a pas été testé sur un compte réel.
+La production Vercel utilise un **Vercel Blob privé** connecté au projet. Le store actuel injecte automatiquement un `BLOB_READ_WRITE_TOKEN` chiffré dans les environnements du projet ; le SDK accepte également `BLOB_STORE_ID` avec l’identité OIDC rotative des connexions récentes. Ne jamais copier ces valeurs dans GitHub ou les journaux. Pour un développement hors Vercel, le jeton peut être fourni par l’outillage Vercel et doit rester dans un gestionnaire de secrets.
+
+Les documents restent chiffrés en AES-GCM par l’application avant l’envoi au stockage. Les chemins sont des UUID aléatoires, aucun lien public n’est enregistré et les octets ne sont restitués qu’après le contrôle d’accès de l’API. Le magasin Blob doit conserver l’accès `private` ; le passer en `public` constituerait une régression de sécurité.
+
+Le repli S3 compatible reste pris en charge avec `STORAGE_ENDPOINT` HTTPS, `STORAGE_REGION`, `STORAGE_BUCKET`, `STORAGE_ACCESS_KEY_ID` et `STORAGE_SECRET_ACCESS_KEY`. Neon Object Storage utilise les noms standards `AWS_ENDPOINT_URL_S3`, `AWS_REGION`, `AWS_ACCESS_KEY_ID` et `AWS_SECRET_ACCESS_KEY`, plus le nom du bucket privé dans `STORAGE_BUCKET`. Neon exige l’adressage path-style, activé par l’adaptateur. Ne jamais configurer simultanément Blob et S3 sans choisir explicitement le backend attendu.
+
+En développement sans Blob ni S3, le stockage local chiffré reste disponible. Il est interdit sur Vercel, dont le système de fichiers est éphémère. Après toute modification du stockage, tester un cycle téléversement, téléchargement authentifié et suppression de l’objet de test, puis vérifier l’absence d’erreur dans les journaux sans y inscrire de donnée médicale.

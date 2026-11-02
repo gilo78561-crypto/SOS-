@@ -4,8 +4,14 @@ import {
   NotFoundException,
   ServiceUnavailableException,
 } from '@nestjs/common';
-import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import {
+  DeleteObjectCommand,
+  GetObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
+import { del as deleteBlob, get as getBlob, put as putBlob } from '@vercel/blob';
+import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
@@ -16,21 +22,33 @@ import { CareService } from './care';
 import { encrypt, decrypt } from './crypto';
 import { root, demo } from './config';
 export class PrivateStorage {
-  private s3 = process.env.STORAGE_BUCKET
-    ? new S3Client({
-        region: process.env.STORAGE_REGION ?? 'auto',
-        endpoint: process.env.STORAGE_ENDPOINT,
-        forcePathStyle: true,
-        credentials: {
-          accessKeyId: process.env.STORAGE_ACCESS_KEY_ID!,
-          secretAccessKey: process.env.STORAGE_SECRET_ACCESS_KEY!,
-        },
-      })
-    : null;
+  private blobToken = process.env.BLOB_READ_WRITE_TOKEN?.trim() || undefined;
+  private useBlob = Boolean(this.blobToken || process.env.BLOB_STORE_ID?.trim());
+  private s3 =
+    !this.useBlob && process.env.STORAGE_BUCKET
+      ? new S3Client({
+          region: process.env.STORAGE_REGION ?? 'auto',
+          endpoint: process.env.STORAGE_ENDPOINT,
+          forcePathStyle: true,
+          credentials: {
+            accessKeyId: process.env.STORAGE_ACCESS_KEY_ID!,
+            secretAccessKey: process.env.STORAGE_SECRET_ACCESS_KEY!,
+          },
+        })
+      : null;
   async put(bytes: Buffer) {
     const key = randomUUID();
     const body = encrypt(bytes.toString('base64'));
-    if (this.s3)
+    if (this.useBlob) {
+      const blob = await putBlob(key, body, {
+        access: 'private',
+        addRandomSuffix: false,
+        contentType: 'application/octet-stream',
+        ...(this.blobToken ? { token: this.blobToken } : {}),
+      });
+      if (blob.pathname !== key)
+        throw new ServiceUnavailableException('Le stockage privé des documents est indisponible.');
+    } else if (this.s3)
       await this.s3.send(
         new PutObjectCommand({
           Bucket: process.env.STORAGE_BUCKET,
@@ -50,7 +68,16 @@ export class PrivateStorage {
   async get(key: string) {
     z.uuid().parse(key);
     let data: string;
-    if (this.s3) {
+    if (this.useBlob) {
+      const result = await getBlob(key, {
+        access: 'private',
+        useCache: false,
+        ...(this.blobToken ? { token: this.blobToken } : {}),
+      });
+      if (!result || result.statusCode !== 200)
+        throw new ServiceUnavailableException('Le stockage privé des documents est indisponible.');
+      data = await new Response(result.stream).text();
+    } else if (this.s3) {
       const r = await this.s3.send(new GetObjectCommand({ Bucket: process.env.STORAGE_BUCKET, Key: key }));
       data = await r.Body!.transformToString();
     } else {
@@ -59,6 +86,19 @@ export class PrivateStorage {
       data = await readFile(resolve(root, '.data/private', key), 'utf8');
     }
     return Buffer.from(decrypt(data), 'base64');
+  }
+  async delete(key: string) {
+    z.uuid().parse(key);
+    if (this.useBlob) {
+      if (this.blobToken) await deleteBlob(key, { token: this.blobToken });
+      else await deleteBlob(key);
+    } else if (this.s3)
+      await this.s3.send(new DeleteObjectCommand({ Bucket: process.env.STORAGE_BUCKET, Key: key }));
+    else {
+      if (process.env.VERCEL)
+        throw new ServiceUnavailableException('Le stockage privé des documents est indisponible.');
+      await rm(resolve(root, '.data/private', key), { force: true });
+    }
   }
 }
 export class ExtrasService {
@@ -299,8 +339,19 @@ export class ExtrasService {
     if ((await this.db.repo('documents').countBy({ userId: u.id })) >= 20)
       throw new BadRequestException('Maximum 20 justificatifs.');
     const objectKey = await this.storage.put(bytes);
-    const d = await this.db.repo('documents').save({ userId: u.id, name: v.name, mime: v.mime, objectKey });
-    await this.auth.audit(u.id, 'document.upload', d.id);
+    let d;
+    try {
+      d = await this.db.source.transaction(async (em) => {
+        const document = await this.db
+          .repo('documents', em)
+          .save({ userId: u.id, name: v.name, mime: v.mime, objectKey });
+        await this.auth.audit(u.id, 'document.upload', document.id, em);
+        return document;
+      });
+    } catch (error) {
+      await this.storage.delete(objectKey).catch(() => undefined);
+      throw error;
+    }
     const { objectKey: _key, ...data } = d;
     return data;
   }

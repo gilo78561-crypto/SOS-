@@ -14,15 +14,17 @@
     "start": "node dist/main.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "migrate": "npm run build && node dist/cli.js migrate",
-    "seed": "npm run build && node dist/cli.js seed"
+    "seed": "npm run build && node dist/cli.js seed",
+    "storage:check": "npm run build && node dist/storage-check.js"
   },
   "dependencies": {
-    "@sos/contracts": "*",
+    "@aws-sdk/client-s3": "^3.900.0",
     "@nestjs/common": "^11.1.0",
     "@nestjs/core": "^11.1.0",
     "@nestjs/platform-express": "^11.1.0",
     "@nestjs/swagger": "^11.2.0",
-    "@aws-sdk/client-s3": "^3.900.0",
+    "@sos/contracts": "*",
+    "@vercel/blob": "^2.3.0",
     "cookie-parser": "^1.4.7",
     "dotenv": "^17.2.3",
     "express-rate-limit": "^8.2.0",

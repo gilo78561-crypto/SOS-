@@ -16,4 +16,9 @@ if (process.env.RUN_DATABASE_MIGRATIONS === 'true') {
   run(['run', 'db:seed']);
 }
 
+if (process.env.RUN_STORAGE_CHECK === 'true') {
+  console.log('Contrôle du stockage privé...');
+  run(['run', 'storage:check']);
+}
+
 run(['run', 'build', '--workspace=@sos/web']);

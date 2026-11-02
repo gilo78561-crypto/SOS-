@@ -128,6 +128,8 @@ describe('Adaptateur HTTP utilisé par Next.js', () => {
 
   it('refuse un stockage éphémère de documents sur Vercel', async () => {
     vi.stubEnv('VERCEL', '1');
+    vi.stubEnv('BLOB_READ_WRITE_TOKEN', '');
+    vi.stubEnv('BLOB_STORE_ID', '');
     vi.stubEnv('STORAGE_BUCKET', '');
     try {
       const { PrivateStorage } = await import('../apps/api/src/extras');

@@ -26,16 +26,17 @@ Configurer les variables suivantes sur **le projet Vercel du site**, dans chaque
 | NEXT_PUBLIC_API_URL | /api, ou laisser absent ; supprimer toute ancienne valeur localhost.                                                                                                                                                                               |
 | DEMO_MODE           | false                                                                                                                                                                                                                                              |
 | PAYMENT_MODE        | disabled tant qu'un fournisseur réel n'est pas configuré.                                                                                                                                                                                          |
+| BLOB_READ_WRITE_TOKEN / BLOB_STORE_ID | Identifiant privé injecté automatiquement par le store Vercel Blob connecté. Le projet actuel reçoit un jeton chiffré ; les connexions OIDC utilisent un identifiant de store et un jeton système rotatif. Ne jamais copier ces valeurs dans GitHub ni les journaux. |
 
 Créer une base PostgreSQL dédiée avec PostGIS (Neon prend en charge cette extension). Avec la connexion directe et les secrets injectés dans un environnement privé, lancer npm run db:migrate puis npm run db:seed en NODE_ENV=production. Les migrations installent les extensions disponibles ; PostGIS est obligatoire en production. Le seed de production ajoute le catalogue, sans comptes fictifs. Les requêtes HTTP n'exécutent pas les migrations en production. Ne jamais placer les secrets dans GitHub, les variables NEXT_PUBLIC_* ou un journal de build. Redéployer après modification des variables Vercel.
 
 Vérifier ensuite GET /api/health (200), GET /api/auth/me sans session (401), puis l'inscription et la connexion. Un HTTP 503 API_UNAVAILABLE signifie que l'API est bien routée mais que son initialisation reste indisponible ; consulter sa configuration privée et les journaux. Cela ne valide pas une base fonctionnelle.
 
-Les documents nécessitent un stockage S3 privé avec STORAGE_BUCKET et les variables STORAGE_* décrites dans INTEGRATIONS.md. Sur Vercel, l'API refuse le stockage local éphémère si le bucket n'est pas configuré. Les comptes et le catalogue peuvent fonctionner indépendamment du stockage des documents. Paiement, vidéo et notifications nécessitent leurs propres fournisseurs.
+Les documents utilisent en production un **Vercel Blob privé** connecté au même projet. L’API refuse le stockage local éphémère sur Vercel. Les identifiants Blob sont injectés et chiffrés par la plateforme ; aucun jeton ne doit être ajouté à GitHub. Le SDK accepte aussi l’identité OIDC rotative des connexions récentes. Pour un hébergement différent, S3 compatible ou Neon Object Storage restent disponibles avec les variables décrites dans INTEGRATIONS.md. Les comptes et le catalogue peuvent fonctionner indépendamment du stockage des documents. Paiement, vidéo et notifications nécessitent leurs propres fournisseurs.
 
 Le serveur autonome apps/api reste disponible pour un hébergement séparé. Il n'est pas nécessaire pour le déploiement intégré. La création de la base, les migrations et l'enregistrement des secrets exigent un accès autorisé aux comptes concernés ; le dépôt seul ne les provisionne pas.
 
-Références : [routes API Next.js](https://nextjs.org/docs/pages/building-your-application/routing/api-routes), [variables système Vercel](https://vercel.com/docs/environment-variables/system-environment-variables), [PostGIS sur Neon](https://neon.com/docs/extensions/postgis).
+Références : [routes API Next.js](https://nextjs.org/docs/pages/building-your-application/routing/api-routes), [variables système Vercel](https://vercel.com/docs/environment-variables/system-environment-variables), [Vercel Blob privé](https://vercel.com/docs/vercel-blob/private-storage), [PostGIS sur Neon](https://neon.com/docs/extensions/postgis), [Neon Object Storage](https://neon.com/docs/storage/overview).
 
 ## Docker Compose
 
@@ -61,13 +62,13 @@ Aucun rôle élevé ne peut être demandé à l’inscription. Dans un terminal 
 
 ## Sauvegarde et restauration
 
-npm run db:backup produit un archive pg_dump custom, une copie des fichiers privés locaux déjà chiffrés et un manifeste SHA-256 sous .data/backups/date. PG_BIN permet de choisir les outils PostgreSQL. La clé AES n’est jamais incluse. Un bucket S3 nécessite une sauvegarde/version du bucket séparée. Les archives contiennent aussi des données de compte : elles doivent rester privées et être chiffrées au niveau du support de sauvegarde, avec accès restreint. La copie locale ignorée dans Git sert au développement, pas de stratégie hors site.
+npm run db:backup produit un archive pg_dump custom, une copie des fichiers privés locaux déjà chiffrés et un manifeste SHA-256 sous .data/backups/date. PG_BIN permet de choisir les outils PostgreSQL. La clé AES n’est jamais incluse. Vercel Blob, S3 ou Neon Object Storage nécessitent une stratégie séparée de sauvegarde, versionnement et restauration des objets. Les archives contiennent aussi des données de compte : elles doivent rester privées et être chiffrées au niveau du support de sauvegarde, avec accès restreint. La copie locale ignorée dans Git sert au développement, pas de stratégie hors site.
 
 ```powershell
 npm run db:restore:test
 ```
 
-Ce contrôle n’opère que sur PostgreSQL local hors production : crée une base isolée au suffixe _restore_test, restaure l’archive, compare le nombre de lignes des tables publiques et les empreintes des fichiers privés, écrit restore-verification.json puis supprime uniquement cette base temporaire. Ne pas lancer pendant des écritures concurrentes. La vérification locale du 27 octobre 2026 a réussi sur les 27 tables. Elle ne prouve pas la restauration de S3 ni d’un hébergement de production.
+Ce contrôle n’opère que sur PostgreSQL local hors production : crée une base isolée au suffixe _restore_test, restaure l’archive, compare le nombre de lignes des tables publiques et les empreintes des fichiers privés, écrit restore-verification.json puis supprime uniquement cette base temporaire. Ne pas lancer pendant des écritures concurrentes. La vérification locale du 27 octobre 2026 a réussi sur les 27 tables. Elle ne prouve pas la restauration de Vercel Blob, S3, Neon Object Storage ni d’un hébergement de production.
 
 Pour un incident réel : arrêter les écritures, restaurer l’archive dans une nouvelle base isolée avec pg_restore --exit-on-error --no-owner --no-acl, restaurer la version correspondante des objets privés et la clé AES conservée séparément, contrôler comptages/intégrité/déchiffrement et accès, valider le point de reprise, puis basculer la configuration. Répéter périodiquement avec une sauvegarde hors site et documenter les objectifs de perte de données et de reprise. Ne pas écraser directement une base active.
 
