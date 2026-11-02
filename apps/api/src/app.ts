@@ -29,7 +29,7 @@ import { SwaggerModule, DocumentBuilder, ApiTags, ApiBody } from '@nestjs/swagge
 import type { Request, Response } from 'express';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
-import { rateLimit } from 'express-rate-limit';
+import { ipKeyGenerator, rateLimit } from 'express-rate-limit';
 import { ZodError, z } from 'zod';
 import { QueryFailedError } from 'typeorm';
 import { writeFileSync } from 'node:fs';
@@ -466,7 +466,10 @@ export async function createApp(db: Database, options: { log?: boolean; exportOp
     rawBody: true,
     bodyParser: true,
   });
-  app.getHttpAdapter().getInstance().set('trust proxy', false);
+  const isVercel = process.env.VERCEL === '1';
+  app.getHttpAdapter().getInstance().set('trust proxy', isVercel ? 1 : false);
+  const clientIpKeyGenerator = (request: Request) =>
+    ipKeyGenerator(request.ip ?? request.socket.remoteAddress ?? 'unknown');
   app.use(helmet());
   app.use(cookieParser());
   app.use('/api', (_req: Request, res: Response, next: () => void) => {
@@ -479,6 +482,7 @@ export async function createApp(db: Database, options: { log?: boolean; exportOp
       limit: 180,
       standardHeaders: 'draft-8',
       legacyHeaders: false,
+      keyGenerator: clientIpKeyGenerator,
       message: { message: 'Trop de requêtes. Réessaie dans une minute.' },
     }),
   );
@@ -489,12 +493,19 @@ export async function createApp(db: Database, options: { log?: boolean; exportOp
       limit: 40,
       standardHeaders: 'draft-8',
       legacyHeaders: false,
+      keyGenerator: clientIpKeyGenerator,
       message: { message: 'Trop de tentatives. Réessaie plus tard.' },
     }),
   );
   app.use(
     '/api/assistant',
-    rateLimit({ windowMs: 60000, limit: 10, standardHeaders: 'draft-8', legacyHeaders: false }),
+    rateLimit({
+      windowMs: 60000,
+      limit: 10,
+      standardHeaders: 'draft-8',
+      legacyHeaders: false,
+      keyGenerator: clientIpKeyGenerator,
+    }),
   );
   app.useBodyParser('json', { limit: '8mb' });
   app.enableCors({
