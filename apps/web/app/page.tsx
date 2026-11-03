@@ -16,8 +16,16 @@ import {
   CalendarDays,
   ChevronDown,
   MoveRight,
+  Droplet,
+  type LucideIcon,
 } from 'lucide-react';
 import { Brand } from '../components/brand';
+const heroServices: [LucideIcon, string, string][] = [
+  [Stethoscope, 'Consultation médicale', 'Généralistes et spécialistes'],
+  [House, 'Soins à domicile', 'Recevez des soins chez vous'],
+  [Droplet, 'Prélèvements sanguins', 'À domicile ou sur rendez-vous'],
+  [ScanLine, 'Examens médicaux', 'Échographies et ECG'],
+];
 const services = [
   {
     icon: Stethoscope,
@@ -104,67 +112,48 @@ export default function Home() {
         </Link>
       </header>
       <main id="main">
-        <section className="hero container">
-          <div className="hero-copy">
-            <div className="eyebrow">
-              <span className="dot" /> LA SANTÉ, PLUS PROCHE DE VOUS
+        <section className="hero">
+          <div className="hero-swoosh" aria-hidden="true" />
+          <div className="hero-inner container">
+            <div className="hero-copy">
+              <p className="hero-badge">VOTRE SANTÉ, NOTRE PRIORITÉ</p>
+              <h1>
+                Des soins de santé de qualité, <em>où que vous soyez.</em>
+              </h1>
+              <p>
+                Consultez des médecins généralistes et spécialistes, bénéficiez de soins à domicile et accédez à
+                des services médicaux en toute simplicité. <strong>SOS DOCTEURS</strong> vous accompagne à chaque
+                étape.
+              </p>
+              <div className="hero-actions">
+                <Link className="btn btn-pill" href="/espace?nouveau=1">
+                  <CalendarDays size={19} /> Prendre un rendez-vous <ArrowRight size={18} />
+                </Link>
+                <a className="btn btn-pill btn-line" href="tel:+2290196751075">
+                  <Phone size={18} /> Appeler un médecin
+                </a>
+              </div>
             </div>
-            <h1>
-              Le bon soin.
-              <br />
-              <em>Au bon endroit.</em>
-            </h1>
-            <p>
-              À domicile, au bureau ou à distance, prenez soin de vous et de vos proches. Nous vous aidons à
-              organiser votre prise en charge.
-            </p>
-            <div className="hero-actions">
-              <Link className="btn" href="/espace?nouveau=1">
-                Demander un soin <ArrowRight size={18} />
-              </Link>
-              <a className="text-link" href="#services">
-                Découvrir les services <ArrowUpRight size={17} />
-              </a>
-            </div>
-            <div className="hero-assurance">
-              <span>
-                <ShieldCheck size={17} /> Espace personnel sécurisé
-              </span>
-              <span>
-                <Check size={17} /> Paiement après les soins
-              </span>
-            </div>
-          </div>
-          <div className="hero-visual">
-            <div className="hero-circle" />
-            <div className="hero-photo">
+            <div className="hero-visual">
               <img
-                src="/sos-docteurs-affiche.jpeg"
-                alt="Équipe médicale de l’affiche SOS DOCTEURS fournie par l’organisation"
-                width="762"
-                height="1080"
+                src="/hero-equipe.jpg"
+                alt="Un médecin et une infirmière de SOS DOCTEURS, disponibles 24h/24 et 7j/7"
+                width="846"
+                height="940"
                 fetchPriority="high"
               />
             </div>
-            <div className="photo-caption">
-              <span className="icon-tile">
-                <House size={22} />
-              </span>
-              <div>
-                <strong>Votre santé, notre mission.</strong>
-                <small>Le soin vient à vous.</small>
-              </div>
-            </div>
-            <div className="floating-label">
-              <ShieldCheck size={18} /> Une demande, un suivi
-            </div>
-            <span className="visual-plus plus-one" aria-hidden="true">
-              +
-            </span>
-            <span className="visual-plus plus-two" aria-hidden="true">
-              +
-            </span>
-            <span className="visual-caption">SOS DOCTEURS · BÉNIN</span>
+            <ul className="hero-services">
+              {heroServices.map(([Icon, name, text]) => (
+                <li key={name}>
+                  <span>
+                    <Icon size={24} />
+                  </span>
+                  <strong>{name}</strong>
+                  <small>{text}</small>
+                </li>
+              ))}
+            </ul>
           </div>
         </section>
         <div className="confidence-strip">
